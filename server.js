@@ -1,20 +1,23 @@
+const express     = require('express');
+const app         = express();
+const morgan      = require('morgan');
+const compression = require('compression');
+const serveStatic = require('serve-static');
+const basicAuth   = require('basic-auth-connect');
 
-var express = require('express');
-var app = express();
-
-var user = process.env.USER;
-var pass = process.env.PASS;
+const user = process.env.USER;
+const pass = process.env.PASS;
 
 app.set('port', process.env.PORT || 3000);
 
 if (user && pass) {
-  app.use(express.basicAuth(user, pass));
+  app.use(basicAuth(user, pass));
 }
 
-app.use(express.logger('dev'));
-app.use(express.compress());
-app.use(express.static(__dirname + '/public'));
+app.use(morgan('dev'));
+app.use(compression());
+app.use(serveStatic(`${__dirname}/public`));
 
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'), () => {
   console.log('Server listening on port %s', app.get('port'));
 });
